@@ -1,3 +1,5 @@
+Escala de Horários — Equipe de Recreação
+
 Página única em HTML/CSS/JS que exibe a escala de horários da equipe de recreação de forma visual, organizada por dia e por recreador.
 
 Contexto
@@ -11,7 +13,7 @@ Sem distinção visual clara entre folga, carga cheia, 4h, compensação e féri
 Dependência do Excel instalado para simplesmente consultar a escala.
 
 
-Para resolver isso, migrei os dados das planilhas para um único arquivo index.html, autocontido, que roda em qualquer navegador sem precisar instalar nada.
+Para resolver isso, migrei os dados das planilhas para um único arquivo index.html, autocontido, e publiquei o projeto no Netlify, para que a equipe possa consultar a escala direto pelo navegador, sem precisar de Excel nem de arquivos locais.
 
 O que essa solução faz
 
@@ -24,7 +26,14 @@ Interface pensada para leitura rápida, sem precisar abrir planilha nenhuma.
 
 Como usar
 
-Basta abrir o arquivo index.html em qualquer navegador (Chrome, Edge, Firefox etc.). Não precisa de servidor, instalação ou internet — só a fonte do Google Fonts é carregada online; sem conexão, a página funciona normalmente com uma fonte padrão do sistema.
+Basta acessar o link publicado (hospedado no Netlify): [seu link aqui]
+
+Não precisa instalar nada, baixar arquivo ou ter o Excel — funciona direto no navegador, inclusive pelo celular. Só a fonte do Google Fonts é carregada online; sem conexão, a página funciona normalmente com uma fonte padrão do sistema.
+
+
+Opcional, caso alguém queira rodar localmente para desenvolvimento: basta abrir o arquivo index.html em qualquer navegador (Chrome, Edge, Firefox etc.).
+
+
 
 Estrutura do arquivo
 
@@ -38,7 +47,12 @@ JavaScript (dentro de <script>): dados da escala (NAMES, HOURS, entradas de cada
 
 Atualizando a escala
 
-Os dados de cada mês ficam direto no JavaScript, em constantes como NAMES (nomes dos recreadores) e nas entradas de cada dia (horário e tipo: off, full, comp, ferias, reduced). Para atualizar, basta editar esses valores manualmente no próprio arquivo, não existe um banco de dados ou planilha por trás.
+Os dados de cada mês ficam direto no JavaScript, em constantes como NAMES (nomes dos recreadores) e nas entradas de cada dia (horário e tipo: off, full, comp, ferias, reduced).
+
+
+Para quem consulta a escala: só acessar o link do Netlify, não precisa editar nada.
+Para quem atualiza a escala: edita esses valores manualmente no index.html (não existe banco de dados ou planilha por trás) e faz o deploy novamente no Netlify (arrastando a pasta ou via Git, dependendo de como o projeto está configurado).
+
 
 Possíveis próximos passos
 
