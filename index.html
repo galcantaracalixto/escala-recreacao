@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Escala Agosto 2026 — Recreação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep: #0E4A52;
+    --deep-2: #0A363C;
+    --sand: #F3ECD9;
+    --ink: #10201F;
+    --r1: #2E86AB;
+    --r2: #E4572E;
+    --r3: #3A9679;
+    --r4: #D64550;
+    --gold: #F4B942;
+    --muted: #8A8578;
+    --line: rgba(243,236,217,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+      radial-gradient(1200px 500px at 15% -10%, rgba(244,185,66,0.10), transparent 60%),
+      linear-gradient(180deg, var(--deep) 0%, var(--deep-2) 100%);
+    background-attachment:fixed;
+    color:var(--sand);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 20px 60px;
+  }
+  footer{
+    max-width:1180px;
+    margin:40px auto 0;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    color:rgba(243,236,217,0.4);
+    text-align:center;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+  .layout{
+    display:grid;
+    grid-template-columns:1fr 400px;
+    gap:32px;
+    align-items:start;
+  }
+  .right-col{
+    position:sticky;
+    top:24px;
+    max-height:calc(100vh - 48px);
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(243,236,217,0.18) transparent;
+  }
+  .right-col::-webkit-scrollbar{width:6px;}
+  .right-col::-webkit-scrollbar-track{background:transparent;}
+  .right-col::-webkit-scrollbar-thumb{
+    background:rgba(243,236,217,0.18);
+    border-radius:10px;
+  }
+  .right-col::-webkit-scrollbar-thumb:hover{background:rgba(243,236,217,0.3);}
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;}
+    .right-col{position:static;max-height:none;}
+  }
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,4vw,42px);
+    margin:0 0 8px;
+    line-height:1.05;
+  }
+  .sub{color:rgba(243,236,217,0.65);font-size:14.5px;max-width:560px;line-height:1.5;}
+
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px 18px;
+    margin:22px 0 26px;
+    padding:14px 16px;
+    border:1px solid rgba(243,236,217,0.09);
+    border-radius:10px;
+    background:rgba(6,22,24,0.35);
+    backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+  }
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(243,236,217,0.85);}
+  .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+  .cal{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+  }
+  .dow{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:rgba(243,236,217,0.45);
+    text-align:center;
+    padding-bottom:6px;
+  }
+  .cell{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:9px;
+    border:1px solid rgba(243,236,217,0.08);
+    background:rgba(6,22,24,0.32);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:0 4px 14px rgba(0,0,0,0.18);
+    cursor:pointer;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    transition:background .15s ease, transform .1s ease, border-color .15s ease;
+  }
+  .cell:hover{background:rgba(6,22,24,0.5);transform:translateY(-2px);}
+  .cell.empty{visibility:hidden;pointer-events:none;}
+  .cell.weekend{border-color:rgba(244,185,66,0.35);}
+  .cell.selected{background:rgba(244,185,66,0.14);border-color:var(--gold);}
+  .cell .num{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:17px;
+  }
+  .tide{
+    position:absolute;
+    left:8px; right:8px; bottom:7px;
+    display:flex;
+    gap:3px;
+  }
+  .tide span{
+    flex:1;
+    height:4px;
+    border-radius:2px;
+    background:rgba(243,236,217,0.12);
+  }
+
+  .panel{
+    margin-top:26px;
+    border:1px solid rgba(243,236,217,0.09);
+    border-radius:14px;
+    background:rgba(6,22,24,0.38);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    box-shadow:0 10px 30px rgba(0,0,0,0.22);
+    padding:22px 24px;
+    min-height:120px;
+  }
+  .panel .placeholder{
+    color:rgba(243,236,217,0.4);
+    font-size:14px;
+    font-style:italic;
+  }
+  .panel-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:16px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-head .day-num{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:34px;
+    color:var(--gold);
+  }
+  .panel-head .day-label{
+    font-size:14px;
+    color:rgba(243,236,217,0.6);
+  }
+  .rows{display:flex;flex-direction:column;gap:10px;}
+  .row{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:14px;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid rgba(243,236,217,0.05);
+    background:rgba(4,18,20,0.4);
+  }
+  .person{
+    display:flex;align-items:center;gap:8px;
+    font-weight:600;font-size:14px;
+  }
+  .person .dot{width:8px;height:8px;}
+  .detail{font-size:13.5px;color:rgba(243,236,217,0.85);}
+  .detail .status{
+    display:inline-flex;
+    align-items:center;
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:20px;
+    margin-left:8px;
+    vertical-align:1px;
+  }
+  .status.off{background:rgba(138,133,120,0.25);color:rgba(243,236,217,0.75);}
+  .status.full{background:rgba(244,185,66,0.22);color:var(--gold);}
+  .status.comp{background:rgba(230,126,34,0.18);color:#f0a875;}
+  .status.ferias{background:rgba(46,134,171,0.2);color:#7fc2e0;}
+  .status.reduced{background:rgba(58,150,121,0.2);color:#7fd8bb;}
+  .status svg{width:9px;height:9px;vertical-align:-1px;margin-right:3px;}
+
+  .section-title{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:rgba(243,236,217,0.45);
+    margin:22px 0 12px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+  }
+  .act-rows{display:flex;flex-direction:column;gap:8px;}
+  .act-row{
+    display:grid;
+    grid-template-columns:52px 1fr;
+    gap:12px;
+    padding:9px 12px;
+    border-radius:8px;
+    border:1px solid rgba(243,236,217,0.05);
+    background:rgba(4,18,20,0.4);
+  }
+  .act-time{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--gold);
+    white-space:nowrap;
+    padding-top:1px;
+  }
+  .act-title{font-weight:600;font-size:13.5px;line-height:1.3;margin-bottom:3px;}
+  .act-meta{font-size:12px;color:rgba(243,236,217,0.55);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .act-meta .dot{width:7px;height:7px;}
+  .act-obs{font-size:11.5px;color:rgba(243,236,217,0.4);font-style:italic;margin-top:4px;line-height:1.4;}
+
+  @media (max-width:640px){
+    .row{grid-template-columns:1fr;gap:4px;}
+    .act-row{grid-template-columns:1fr;gap:4px;}
+    .cell .num{font-size:14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="layout">
+    <div class="left-col">
+      <header>
+        <div class="eyebrow">Sesc Caldas Novas · Recreação</div>
+        <h1>Escala de horários — Agosto 2026</h1>
+        <p class="sub">Clique em um dia pra ver o horário e as atividades de cada recreador.</p>
+      </header>
+
+      <div class="legend">
+        <div class="legend-item"><span class="dot" style="background:var(--r1)"></span>Recreador 1</div>
+        <div class="legend-item"><span class="dot" style="background:var(--r2)"></span>Recreador 2</div>
+        <div class="legend-item"><span class="dot" style="background:var(--r3)"></span>Recreador 3</div>
+        <div class="legend-item"><span class="dot" style="background:var(--r4)"></span>Recreador 4</div>
+        <div class="legend-item"><span class="dot" style="background:var(--muted)"></span>Recreador 5 (férias)</div>
+      </div>
+
+      <div class="cal" id="cal"></div>
+    </div>
+
+    <div class="right-col">
+      <div class="panel" id="panel">
+        <div class="placeholder">Selecione um dia no calendário ao lado ↑</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Responsável: Gabriel Calixto</footer>
+</div>
+
+<script>
+const COLORS = {r1:'#2E86AB', r2:'#E4572E', r3:'#3A9679', r4:'#D64550', r5:'#8A8578'};
+const NAMES = {r1:'Recreador 1', r2:'Recreador 2', r3:'Recreador 3', r4:'Recreador 4', r5:'Recreador 5'};
+
+const HOURS = {
+  N_manha: '7h30 às 16h30 (intervalo 12h–13h)',
+  N_noite: '14h às 23h (intervalo 19h–20h)',
+  SUNREG_manha: '8h às 12h · 4h',
+  SUNREG_noite: '9h às 13h · 4h, sem intervalo',
+  COMP_manha: '7h30 às 11h30 · 4h compensação',
+  COMP_noite: '14h às 18h · 4h compensação',
+  OFFFIX: 'Folga fixa semanal',
+  SUNOFF: 'Folga (domingo quinzenal)',
+  SATOFF: 'Folga (fim de semana cheio)',
+  FERIAS: 'Férias'
+};
+
+function statusClass(kind){
+  if(kind==='off') return 'off';
+  if(kind==='full') return 'full';
+  if(kind==='comp') return 'comp';
+  if(kind==='ferias') return 'ferias';
+  if(kind==='reduced') return 'reduced';
+  return '';
+}
+
+// day entry: {type, kind} where type is a HOURS key or literal text, kind drives the pill style ('','off','full','comp','ferias')
+function e(type, kind){ return {type, kind: kind||''}; }
+
+const turno = {r1:'noite', r2:'noite', r3:'manha', r4:'manha'};
+
+const DATA = {
+1:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+2:{r1:e('SUNOFF','off'), r2:e('SUNFULL','full'), r3:e('SUNREG_manha','reduced'), r4:e('SUNOFF','off'), r5:e('FERIAS','ferias')},
+3:{r1:e('N_noite'), r2:e('N_noite'), r3:e('OFFFIX','off'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+4:{r1:e('COMP_noite','comp'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+5:{r1:e('N_noite'), r2:e('OFFFIX','off'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+6:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+7:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('COMP_manha','comp'), r5:e('FERIAS','ferias')},
+8:{r1:e('N_noite'), r2:e('SATOFF','off'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+9:{r1:e('SUNFULL','full'), r2:e('SUNOFF','off'), r3:e('SUNOFF','off'), r4:e('SUNREG_manha','reduced'), r5:e('FERIAS','ferias')},
+10:{r1:e('N_noite'), r2:e('N_noite'), r3:e('COMP_manha','comp'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+11:{r1:e('OFFFIX','off'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+12:{r1:e('N_noite'), r2:e('COMP_noite','comp'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+13:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+14:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('OFFFIX','off'), r5:e('FERIAS','ferias')},
+15:{r1:e('SATOFF','off'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+16:{r1:e('SUNOFF','off'), r2:e('SUNREG_noite','reduced'), r3:e('SUNFULL','full'), r4:e('SUNOFF','off'), r5:e('FERIAS','ferias')},
+17:{r1:e('N_noite'), r2:e('N_noite'), r3:e('OFFFIX','off'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+18:{r1:e('COMP_noite','comp'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+19:{r1:e('N_noite'), r2:e('OFFFIX','off'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+20:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+21:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('COMP_manha','comp'), r5:e('FERIAS','ferias')},
+22:{r1:e('N_noite'), r2:e('N_noite'), r3:e('SATOFF','off'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+23:{r1:e('SUNREG_noite','reduced'), r2:e('SUNOFF','off'), r3:e('SUNOFF','off'), r4:e('SUNFULL','full'), r5:e('FERIAS','ferias')},
+24:{r1:e('N_noite'), r2:e('N_noite'), r3:e('COMP_manha','comp'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+25:{r1:e('OFFFIX','off'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+26:{r1:e('N_noite'), r2:e('COMP_noite','comp'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+27:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('N_manha'), r5:e('FERIAS','ferias')},
+28:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('OFFFIX','off'), r5:e('FERIAS','ferias')},
+29:{r1:e('N_noite'), r2:e('N_noite'), r3:e('N_manha'), r4:e('SATOFF','off'), r5:e('FERIAS','ferias')},
+30:{r1:e('SUNOFF','off'), r2:e('SUNREG_noite','reduced'), r3:e('SUNREG_manha','reduced'), r4:e('SUNOFF','off'), r5:e('FERIAS','ferias')},
+31:{r1:e('N_noite'), r2:e('N_noite'), r3:e('OFFFIX','off'), r4:e('N_manha'), r5:e('FERIAS','ferias')}
+};
+
+// activity entry: {time, title, place, resp, obs}
+function a(time, title, place, resp, obs){ return {time, title, place, resp, obs: obs||''}; }
+
+const ACTIVITIES = {
+1:[
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Diversão Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Confecção de Peteca','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Agito na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('18h','Torneio Ping Pong (em revisão)','Complexo Esportivo Capela','Recreador 1'),
+  a('21h','Música ao Vivo — Magos do Rock','Salão de Eventos','Equipe de Apoio')
+],
+2:[
+  a('8h30','Missa','Capela','Apoio'),
+  a('10h','Tibum em Família (fusão das 2 atividades de piscina — só 1 recreador de manhã)','Parque Aquático Araxá','Recreador 3'),
+  a('14h','Desafio de Sinuca','Salão de Eventos','Recreador 2'),
+  a('16h','Sunset na Piscina','Parque Aquático Araxá','Recreador 2')
+],
+3:[
+  a('8h','Manhã Relax','Centro de Convivência','Recreador 4'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Queimada','Campo Capela','Recreador 2'),
+  a('15h','Trabalhos Manuais','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Cine Sesc','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+4:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Você é o Show (Karaokê)','Salão de Eventos','Recreador 2')
+],
+5:[
+  a('8h','Eco Caminhada','Trilha dos Ipês','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Infláveis','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Fazendo Arte Infantil (quadro com materiais da natureza)','Espaço Cultural','Recreador 1'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 1'),
+  a('17h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 1')
+],
+6:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 3'),
+  a('14h','Horário reservado para reunião de equipe','—','Equipe completa'),
+  a('15h30','Esporte Recreativo','Campo Capela','Recreador 1'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+7:[
+  a('8h','Manhã Relax','Centro de Convivência / Lago','Recreador 3'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Trabalhos Manuais','Salão de Eventos','Recreador 3'),
+  a('16h','Jogos na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 2')
+],
+8:[
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Diversão Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Confecção de Peteca','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Agito na Piscina','Parque Aquático Araxá','Recreador 1'),
+  a('18h','Torneio Ping Pong (em revisão)','Complexo Esportivo Capela','Recreador 3'),
+  a('21h','Música ao Vivo — Magos do Rock','Salão de Eventos','Equipe de Apoio')
+],
+9:[
+  a('8h30','Missa','Capela','Apoio'),
+  a('10h','Tibum em Família (fusão das 2 atividades de piscina — só 1 recreador de manhã)','Parque Aquático Araxá','Recreador 4'),
+  a('14h','Desafio de Sinuca','Salão de Eventos','Recreador 1'),
+  a('16h','Sunset na Piscina','Parque Aquático Araxá','Recreador 1')
+],
+10:[
+  a('8h','Manhã Relax','Centro de Convivência','Recreador 4'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Queimada','Campo Capela','Recreador 2'),
+  a('15h','Trabalhos Manuais','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Cine Sesc','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+11:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Você é o Show (Karaokê)','Salão de Eventos','Recreador 2')
+],
+12:[
+  a('8h','Eco Caminhada','Trilha dos Ipês','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Infláveis','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Fazendo Arte Infantil (quadro com materiais da natureza)','Espaço Cultural','Recreador 1'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 1'),
+  a('17h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 1')
+],
+13:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 4'),
+  a('14h','Horário reservado para reunião de equipe','—','Equipe completa'),
+  a('15h30','Esporte Recreativo','Campo Capela','Recreador 2'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 1'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Bingo','Salão de Eventos','Recreador 1')
+],
+14:[
+  a('8h','Manhã Relax','Centro de Convivência / Lago','Recreador 3'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Trabalhos Manuais','Salão de Eventos','Recreador 3'),
+  a('16h','Jogos na Piscina','Parque Aquático Araxá','Recreador 1'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 1')
+],
+15:[
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Diversão Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Confecção de Peteca','Varanda do Salão de Eventos','Recreador 2'),
+  a('16h','Agito na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('18h','Torneio Ping Pong (em revisão)','Complexo Esportivo Capela','Recreador 4'),
+  a('21h','Música ao Vivo — Magos do Rock','Salão de Eventos','Equipe de Apoio')
+],
+16:[
+  a('8h30','Missa','Capela','Apoio'),
+  a('10h','Tibum em Família (fusão das 2 atividades de piscina — só 1 recreador de manhã)','Parque Aquático Araxá','Recreador 3'),
+  a('14h','Desafio de Sinuca','Salão de Eventos','Recreador 2'),
+  a('16h','Sunset na Piscina','Parque Aquático Araxá','Recreador 2')
+],
+17:[
+  a('8h','Manhã Relax','Centro de Convivência','Recreador 4'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Queimada','Campo Capela','Recreador 2'),
+  a('15h','Trabalhos Manuais','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Cine Sesc','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+18:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Você é o Show (Karaokê)','Salão de Eventos','Recreador 2')
+],
+19:[
+  a('8h','Eco Caminhada','Trilha dos Ipês','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Infláveis','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Fazendo Arte Infantil (quadro com materiais da natureza)','Espaço Cultural','Recreador 1'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 1'),
+  a('17h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 1')
+],
+20:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 4'),
+  a('14h','Horário reservado para reunião de equipe','—','Equipe completa'),
+  a('15h30','Esporte Recreativo','Campo Capela','Recreador 1'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+21:[
+  a('8h','Manhã Relax','Centro de Convivência / Lago','Recreador 3'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Trabalhos Manuais','Salão de Eventos','Recreador 3'),
+  a('16h','Jogos na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 2')
+],
+22:[
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 2'),
+  a('10h','Diversão Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Confecção de Peteca','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Agito na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('18h','Torneio Ping Pong (em revisão)','Complexo Esportivo Capela','Recreador 1'),
+  a('21h','Música ao Vivo — Magos do Rock','Salão de Eventos','Equipe de Apoio')
+],
+23:[
+  a('8h30','Missa','Capela','Apoio'),
+  a('10h','Tibum em Família (fusão das 2 atividades de piscina — só 1 recreador de manhã)','Parque Aquático Araxá','Recreador 4'),
+  a('14h','Desafio de Sinuca','Salão de Eventos','Recreador 1'),
+  a('16h','Sunset na Piscina','Parque Aquático Araxá','Recreador 1')
+],
+24:[
+  a('8h','Manhã Relax','Centro de Convivência','Recreador 4'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Queimada','Campo Capela','Recreador 2'),
+  a('15h','Trabalhos Manuais','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Cine Sesc','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+25:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 2'),
+  a('21h','Você é o Show (Karaokê)','Salão de Eventos','Recreador 2')
+],
+26:[
+  a('8h','Eco Caminhada','Trilha dos Ipês','Recreador 4'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Infláveis','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Fazendo Arte Infantil (quadro com materiais da natureza)','Espaço Cultural','Recreador 1'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 1'),
+  a('17h','Cine Sesc Família','Teatro Odorico Nery','Apoio'),
+  a('19h','Sala de Jogos (confirmar se terá)','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 1')
+],
+27:[
+  a('8h','Passeio Ciclístico','Bicicletário','Recreador 3'),
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 4'),
+  a('10h','Recreação Infantil na Piscina','Parque Aquático Araxá','Recreador 3'),
+  a('14h','Horário reservado para reunião de equipe','—','Equipe completa'),
+  a('15h30','Esporte Recreativo','Campo Capela','Recreador 1'),
+  a('16h30','Acqua Lazer','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+],
+28:[
+  a('8h','Manhã Relax','Centro de Convivência / Lago','Recreador 3'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 3'),
+  a('15h','Trabalhos Manuais','Salão de Eventos','Recreador 3'),
+  a('16h','Jogos na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Sesc Dance','Salão de Eventos','Recreador 2')
+],
+29:[
+  a('10h','Manhã Recreativa Aquática','Parque Aquático Araxá','Recreador 3'),
+  a('10h','Diversão Aquática','Parque Aquático Araxá','Recreador 2'),
+  a('15h','Confecção de Peteca','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Agito na Piscina','Parque Aquático Araxá','Recreador 2'),
+  a('18h','Torneio Ping Pong (em revisão)','Complexo Esportivo Capela','Recreador 1'),
+  a('21h','Música ao Vivo — Magos do Rock','Salão de Eventos','Equipe de Apoio')
+],
+30:[
+  a('8h30','Missa','Capela','Apoio'),
+  a('10h','Tibum em Família (fusão das 2 atividades de piscina — só 1 recreador de manhã)','Parque Aquático Araxá','Recreador 3'),
+  a('14h','Desafio de Sinuca','Salão de Eventos','Recreador 2','Recreador 2 cobre a tarde com 4h extras de trabalho (fora do turno-padrão da manhã) para não deixar furo, pois manhã e turno regular da noite terminam cedo neste domingo.'),
+  a('16h','Sunset na Piscina','Parque Aquático Araxá','Recreador 2')
+],
+31:[
+  a('8h','Manhã Relax','Centro de Convivência','Recreador 4'),
+  a('10h','Tibum em Família','Parque Aquático Araxá','Recreador 4'),
+  a('15h','Queimada','Campo Capela','Recreador 2'),
+  a('15h','Trabalhos Manuais','Varanda do Salão de Eventos','Recreador 1'),
+  a('16h','Cine Sesc','Teatro Odorico Nery','Apoio'),
+  a('16h30','Acqua Zen','Parque Aquático Araxá','Recreador 2'),
+  a('19h','Sala de Jogos','Salão/Sala de Jogos Pirineus','Recreador 1'),
+  a('21h','Bingo','Salão de Eventos','Recreador 2')
+]
+};
+
+function respColor(resp){
+  if(resp.indexOf('Recreador 4')!==-1) return COLORS.r4;
+  if(resp.indexOf('Recreador 3')!==-1) return COLORS.r3;
+  if(resp.indexOf('Recreador 1')!==-1) return COLORS.r1;
+  if(resp.indexOf('Recreador 2')!==-1) return COLORS.r2;
+  return COLORS.r5;
+}
+
+const DOW_LABEL = ['dom','seg','ter','qua','qui','sex','sáb'];
+// Aug 1 2026 = Saturday -> dow index for day1 = 6
+function dowOf(day){ return (6 + (day-1)) % 7; }
+
+const cal = document.getElementById('cal');
+const panel = document.getElementById('panel');
+
+DOW_LABEL.forEach(d=>{
+  const el = document.createElement('div');
+  el.className='dow';
+  el.textContent=d;
+  cal.appendChild(el);
+});
+
+const leadingEmpty = dowOf(1);
+for(let i=0;i<leadingEmpty;i++){
+  const el = document.createElement('div');
+  el.className='cell empty';
+  cal.appendChild(el);
+}
+
+for(let day=1; day<=31; day++){
+  const dow = dowOf(day);
+  const isWeekend = dow===0 || dow===6;
+  const cell = document.createElement('div');
+  cell.className = 'cell' + (isWeekend?' weekend':'');
+  cell.dataset.day = day;
+
+  const num = document.createElement('div');
+  num.className='num';
+  num.textContent=day;
+  cell.appendChild(num);
+
+  const tide = document.createElement('div');
+  tide.className='tide';
+  ['r1','r2','r3','r4'].forEach(p=>{
+    const seg = document.createElement('span');
+    const entry = DATA[day][p];
+    const isOff = entry.kind==='off' || entry.kind==='comp';
+    if(isOff) seg.style.background='rgba(243,236,217,0.10)';
+    else seg.style.background=COLORS[p];
+    if(isOff) seg.style.opacity='0.25';
+    tide.appendChild(seg);
+  });
+  cell.appendChild(tide);
+
+  cell.addEventListener('click', ()=>selectDay(day));
+  cal.appendChild(cell);
+}
+
+function selectDay(day){
+  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('selected'));
+  const target = document.querySelector('.cell[data-day="'+day+'"]');
+  if(target) target.classList.add('selected');
+
+  const dow = dowOf(day);
+  const entry = DATA[day];
+  const head = document.createElement('div');
+
+  let html = '<div class="panel-head"><div class="day-num">'+day+'</div><div class="day-label">'+DOW_LABEL[dow]+' · agosto 2026</div></div><div class="rows">';
+
+  const ICONS = {
+    off: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/></svg>',
+    full: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="9" fill="currentColor"/></svg>',
+    comp: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/></svg>',
+    ferias: '',
+    reduced: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 6v6l3 1.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 3a9 9 0 0 1 0 18" fill="currentColor" stroke="none" opacity="0.35"/></svg>'
+  };
+  const LABELS = {off:'folga', full:'carga cheia', comp:'compensação', ferias:'férias', reduced:'4h'};
+
+  ['r1','r2','r3','r4','r5'].forEach(p=>{
+    const d = entry[p];
+    let text, pill='';
+    if(d.kind==='comp'){
+      text = '';
+    } else if(d.kind==='full'){
+      // dia de carga cheia no domingo: mostra o horário normal da pessoa (turno padrão), não o texto SUNFULL
+      text = HOURS['N_'+turno[p]];
+    } else if(d.type in HOURS){
+      text = HOURS[d.type];
+    } else {
+      text = d.type;
+    }
+    if(d.kind) pill = ' <span class="status '+statusClass(d.kind)+'">'+ICONS[d.kind]+LABELS[d.kind]+'</span>';
+    html += '<div class="row"><div class="person"><span class="dot" style="background:'+COLORS[p]+'"></span>'+NAMES[p]+'</div><div class="detail">'+text+pill+'</div></div>';
+  });
+
+  html += '</div>';
+
+  const acts = ACTIVITIES[day] || [];
+  html += '<div class="section-title">Atividades do dia</div><div class="act-rows">';
+  acts.forEach(act=>{
+    let meta = '<span class="dot" style="background:'+respColor(act.resp)+'"></span>'+act.resp+' · '+act.place;
+    html += '<div class="act-row"><div class="act-time">'+act.time+'</div><div><div class="act-title">'+act.title+'</div><div class="act-meta">'+meta+'</div>'+(act.obs?'<div class="act-obs">'+act.obs+'</div>':'')+'</div></div>';
+  });
+  html += '</div>';
+
+  panel.innerHTML = html;
+}
+
+// select first working day by default
+selectDay(1);
+</script>
+</body>
+</html>
