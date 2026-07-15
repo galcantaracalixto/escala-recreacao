@@ -31,14 +31,14 @@ Estrutura do arquivo
 Tudo está em um único arquivo index.html, dividido em três partes:
 
 
-CSS (dentro de <style>): visual da página — cores, layout, tipografia;
+CSS (dentro de <style>): visual da página; cores, layout, tipografia;
 HTML: estrutura da página (cabeçalho, legenda, painel do dia);
 JavaScript (dentro de <script>): dados da escala (NAMES, HOURS, entradas de cada dia) e a lógica que monta o painel do dia dinamicamente.
 
 
 Atualizando a escala
 
-Os dados de cada mês ficam direto no JavaScript, em constantes como NAMES (nomes dos recreadores) e nas entradas de cada dia (horário e tipo: off, full, comp, ferias, reduced). Para atualizar, basta editar esses valores manualmente no próprio arquivo — não existe um banco de dados ou planilha por trás.
+Os dados de cada mês ficam direto no JavaScript, em constantes como NAMES (nomes dos recreadores) e nas entradas de cada dia (horário e tipo: off, full, comp, ferias, reduced). Para atualizar, basta editar esses valores manualmente no próprio arquivo, não existe um banco de dados ou planilha por trás.
 
 Possíveis próximos passos
 
